@@ -10,15 +10,33 @@ import UIKit
 
 struct Player {
     let color: UIColor
-    var position: [Int]
+    var moves: [[Int]]
+    var lastBackTrack: [Int]
 
     init() {
         self.color = UIColor.black
-        self.position = [0,0]
+        self.moves = []
+        self.lastBackTrack = []
     }
 
     init(color: UIColor, position: [Int]) {
         self.color = color
-        self.position = position
+        self.moves = [position]
+        self.lastBackTrack = []
+    }
+
+    mutating func moveTo(position: [Int]) {
+        self.lastBackTrack = []
+        moves.append(position)
+    }
+
+    mutating func goBack() -> [Int]{
+        let move = moves.popLast()!
+        self.lastBackTrack = move
+        return move
+    }
+
+    static func ==(lhs: Player, rhs: Player) -> Bool {
+        return lhs.color == rhs.color
     }
 }

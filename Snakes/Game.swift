@@ -9,74 +9,122 @@
 import UIKit
 
 protocol GameDelegate {
-    func updatePlayerScore(player: Int)
+    func updatePlayerScore(playerIndex: Int)
+    func updateBoardView(newMove: [Int], playerIndex: Int)
+    func resetBoardView()
+    func setWinningCellColor(position: [Int])
 }
 
 class Game {
     var scores = [0,0]
-    let players: [Player]
-    let board: [[GameCell]]
+    var players: [Player]
+    let startingBoard: [[GameCellView]]
+    var board: [[GameCellView]]
     var timer = Timer()
-    var isPlayer1Turn = true;
+    var currentPlayerIndex: Int
     var delegate:GameDelegate?
     var winningPosition: [Int]
-    
 
-    init(cells: [[GameCell]]) {
-        self.board = cells
-
-        let player1 = Player.init(color: .red, position: [4,0])
-        let player2 = Player.init(color: .blue, position: [4,4])
-        self.board[4][0].state = "player1"
-        self.board[4][4].state = "player2"
-        self.players = [player1,player2]
-        self.winningPosition = [3,4]
+    init(cells: [[GameCellView]]) {
+        startingBoard = cells
+        board = startingBoard
+        players = []
+        winningPosition = []
+        currentPlayerIndex = 0
     }
 
     func start() {
-        //1.Change all board state to neutral
-        //2.Move players to initial position
-        //3.Update board states   ^combine with this
-        //Set winning position
+        board = startingBoard
+        players = [Player.init(color: .red, position: [0,0]),Player.init(color: .blue, position: [4,4])]
+        currentPlayerIndex = 0
+        board[0][0].isOccupied = true
+        board[4][4].isOccupied = true
+        setWinningPosition()
 
-        self.timer = Timer.scheduledTimer(timeInterval: 0.7, target: self, selector: #selector(movePlayer), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(movePlayerAndCheckWin), userInfo: nil, repeats: true)
     }
 
-    @objc func movePlayer() {
-        var player: Player
-        var playerIndex: Int
-        if isPlayer1Turn {
-            playerIndex = 0
-        }else {
-            playerIndex = 1
-        }
-        player = self.players[playerIndex]
+    @objc func movePlayerAndCheckWin() {
+        makeRandomMove(possibleMoves: self.findPossibleMoves())
 
-        //1.Find possible moves
-        //2.Make random move
-
-        if self.checkWin(player: player) {
-            self.delegate?.updatePlayerScore(player: playerIndex)
-            self.resetBoard()
+        if self.checkWin() {
+            delegate?.updatePlayerScore(playerIndex: currentPlayerIndex)
+            resetBoard()
         } else {
-            self.isPlayer1Turn = !isPlayer1Turn
+            if currentPlayerIndex == 0 {
+                currentPlayerIndex = 1
+            }else {
+                currentPlayerIndex = 0
+            }
         }
     }
 
-    func findPossibleMoves(player: Player) -> [[GameCell]] {
-        //check left,right, up, down for forward movement
-        //if none found return prevCell or nothing
-
-        return [[self.board[0][1]]]
+    func setWinningPosition() {
+        var winI = arc4random_uniform(5)
+        var winJ = arc4random_uniform(5)
+        if winI == 0 && winJ == 0 {
+            winI += arc4random_uniform(4) + 1
+        }
+        if winI == 4 && winJ == 4 {
+            winJ -= arc4random_uniform(4) + 1
+        }
+        winningPosition = [Int(winI),Int(winJ)]
+        delegate?.setWinningCellColor(position: winningPosition)
     }
 
-    func checkWin(player: Player) -> Bool {
-        return player.position == self.winningPosition
+    func findPossibleMoves() -> [[Int]] {
+        var possibleMoves: [[Int]] = []
+        var lastMove = players[currentPlayerIndex].moves.last!
+        let y = lastMove[0]
+        let x = lastMove[1]
+        //Left
+        if x-1 >= 0 && !board[y][x-1].isOccupied  {
+            possibleMoves.append([y,x-1])
+        }
+        //Right
+        if x+1 < 5 && !board[y][x+1].isOccupied  {
+            possibleMoves.append([y,x+1])
+        }
+        //Up
+        if y-1 >= 0 && !board[y-1][x].isOccupied  {
+            possibleMoves.append([y-1,x])
+        }
+        //Down
+        if y+1 < 5 && !board[y+1][x].isOccupied  {
+            possibleMoves.append([y+1,x])
+        }
+        //if no new moves, backtrack
+        let currentPlayer = players[currentPlayerIndex]
+        if possibleMoves.count == 1 && possibleMoves[0] == currentPlayer.lastBackTrack {
+            possibleMoves.removeAll()
+        }
+        return possibleMoves
+    }
+
+    func makeRandomMove(possibleMoves: [[Int]]) {
+        var move: [Int]
+        if possibleMoves.count == 0 {
+            if arc4random_uniform(2) == 0 {
+                move = players[currentPlayerIndex].goBack()
+                delegate?.updateBoardView(newMove: move, playerIndex: currentPlayerIndex)
+                board[move[0]][move[1]].isOccupied = false
+            }
+        }else {
+            let randomIndex = arc4random_uniform(UInt32(possibleMoves.count))
+            move = possibleMoves[Int(randomIndex)]
+            players[currentPlayerIndex].moveTo(position: move)
+            delegate?.updateBoardView(newMove: move, playerIndex: currentPlayerIndex)
+            board[move[0]][move[1]].isOccupied = true
+        }
+    }
+
+    func checkWin() -> Bool {
+        return players[currentPlayerIndex].moves.last! == winningPosition
     }
 
     func resetBoard() {
-        self.timer.invalidate()
-        self.start()
+        timer.invalidate()
+        delegate?.resetBoardView()
     }
 
 }

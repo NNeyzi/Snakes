@@ -58,13 +58,25 @@
                                     <constraint firstAttribute="height" constant="21" id="ubg-9s-COi"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Iym-lw-Fep">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="53" id="jDg-oO-22m"/>
+                                    <constraint firstAttribute="width" constant="103" id="sW6-Nz-IFH"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="17"/>
+                                <state key="normal" title="Reset Board">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.25098040700000002" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="Xmk-cz-uIu" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="6zF-DX-HKY"/>
                             <constraint firstItem="k8k-FB-Zce" firstAttribute="top" secondItem="Xmk-cz-uIu" secondAttribute="bottom" constant="8" id="BgP-0d-VrF"/>
                             <constraint firstItem="k8k-FB-Zce" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="CDL-dC-Azh"/>
+                            <constraint firstItem="Iym-lw-Fep" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="GGu-7D-NUc"/>
                             <constraint firstItem="k8k-FB-Zce" firstAttribute="top" secondItem="XPi-zw-lEc" secondAttribute="bottom" constant="8" id="OiM-CY-LUQ"/>
+                            <constraint firstItem="Iym-lw-Fep" firstAttribute="top" secondItem="k8k-FB-Zce" secondAttribute="bottom" constant="8" id="Q3T-VH-XLJ"/>
                             <constraint firstItem="k8k-FB-Zce" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="UxK-wO-m0V"/>
                             <constraint firstItem="F2q-wE-wVP" firstAttribute="leading" secondItem="noQ-Lo-tBi" secondAttribute="trailing" constant="8" id="cdy-KA-fFo"/>
                             <constraint firstItem="k8k-FB-Zce" firstAttribute="top" secondItem="F2q-wE-wVP" secondAttribute="bottom" constant="7" id="d2c-WD-KOI"/>
