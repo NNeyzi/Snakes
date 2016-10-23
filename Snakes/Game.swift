@@ -52,8 +52,8 @@ class Game {
         }
         player = self.players[playerIndex]
 
-        //Find possible moves
-        //Make random move
+        //1.Find possible moves
+        //2.Make random move
 
         if self.checkWin(player: player) {
             self.delegate?.updatePlayerScore(player: playerIndex)
@@ -64,6 +64,9 @@ class Game {
     }
 
     func findPossibleMoves(player: Player) -> [[GameCell]] {
+        //check left,right, up, down for forward movement
+        //if none found return prevCell or nothing
+
         return [[self.board[0][1]]]
     }
 
